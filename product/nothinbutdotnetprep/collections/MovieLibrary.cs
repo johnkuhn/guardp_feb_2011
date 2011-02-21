@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using nothinbutdotnetprep.infrastructure;
 
 namespace nothinbutdotnetprep.collections
 {
@@ -15,54 +15,54 @@ namespace nothinbutdotnetprep.collections
 
         public IEnumerable<Movie> all_movies()
         {
-            return movies;
+            return movies.one_at_a_time();
         }
 
         public void add(Movie movie)
         {
-            int matches = 0;
-            foreach (Movie m in movies)
-                if (m.title == movie.title)
-                    matches++;
+            if (already_contains(movie)) return;
 
-            if(matches == 0)
-                movies.Add(movie);
-            
+            movies.Add(movie);
         }
 
-        public IEnumerable<Movie> sort_all_movies_by_title_descending
+        bool already_contains(Movie movie)
         {
-            get
-            {
-                IList<Movie> tempMovies = movies;
-
-                for (int i = 0; i < tempMovies.Count - 1; i++)
-                {
-                    for (int j = i + 1; j < tempMovies.Count; j++)
-                    {
-                        Movie moviei = tempMovies[i];
-                        Movie moviej = tempMovies[j];
-
-                        if(moviej.title.CompareTo(moviei.title) > 0)
-                        {
-                            Movie temp = tempMovies[i];
-                            tempMovies[i] = tempMovies[j];
-                            tempMovies[j] = temp;
-                        }
-                    }
-                }
-
-                return tempMovies;
-            }
+            return movies.Contains(movie);
         }
 
         public IEnumerable<Movie> all_movies_published_by_pixar()
         {
             IList<Movie> tempMovies = new List<Movie>();
 
-            foreach(Movie m in movies)
+            foreach (var m in movies)
             {
-                if(m.production_studio == ProductionStudio.Pixar)
+                if (m.production_studio == ProductionStudio.Pixar)
+                    tempMovies.Add(m);
+            }
+
+            return tempMovies;
+        }
+
+        public IEnumerable<Movie> all_movies_not_published_by_pixar()
+        {
+            IList<Movie> tempMovies = new List<Movie>();
+
+            foreach (var m in movies)
+            {
+                if (m.production_studio != ProductionStudio.Pixar)
+                    tempMovies.Add(m);
+            }
+
+            return tempMovies;
+        }
+
+        public IEnumerable<Movie> all_action_movies()
+        {
+            IList<Movie> tempMovies = new List<Movie>();
+
+            foreach (var m in movies)
+            {
+                if (m.genre == Genre.action)
                     tempMovies.Add(m);
             }
 
@@ -73,53 +73,9 @@ namespace nothinbutdotnetprep.collections
         {
             IList<Movie> tempMovies = new List<Movie>();
 
-            foreach (Movie m in movies)
+            foreach (var m in movies)
             {
-                if (m.production_studio==ProductionStudio.Pixar || m.production_studio == ProductionStudio.Disney)
-                    tempMovies.Add(m);
-            }
-
-            return tempMovies;
-        }
-
-        public IEnumerable<Movie> sort_all_movies_by_title_ascending
-        {
-            get
-            {
-                IList<Movie> tempMovies = movies;
-
-                for (int i = 0; i < tempMovies.Count - 1; i++)
-                {
-                    for (int j = i + 1; j < tempMovies.Count; j++)
-                    {
-                        Movie moviei = tempMovies[i];
-                        Movie moviej = tempMovies[j];
-
-                        if (moviej.title.CompareTo(moviei.title) < 0)
-                        {
-                            Movie temp = tempMovies[i];
-                            tempMovies[i] = tempMovies[j];
-                            tempMovies[j] = temp;
-                        }
-                    }
-                }
-
-                return tempMovies;
-            }
-        }
-
-        public IEnumerable<Movie> sort_all_movies_by_movie_studio_and_year_published()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Movie> all_movies_not_published_by_pixar()
-        {
-            IList<Movie> tempMovies = new List<Movie>();
-
-            foreach (Movie m in movies)
-            {
-                if (m.production_studio != ProductionStudio.Pixar)
+                if (m.production_studio == ProductionStudio.Pixar || m.production_studio == ProductionStudio.Disney)
                     tempMovies.Add(m);
             }
 
@@ -130,7 +86,7 @@ namespace nothinbutdotnetprep.collections
         {
             IList<Movie> tempMovies = new List<Movie>();
 
-            foreach (Movie m in movies)
+            foreach (var m in movies)
             {
                 if (m.date_published.Year > year)
                     tempMovies.Add(m);
@@ -143,7 +99,7 @@ namespace nothinbutdotnetprep.collections
         {
             IList<Movie> tempMovies = new List<Movie>();
 
-            foreach (Movie m in movies)
+            foreach (var m in movies)
             {
                 if (m.date_published.Year >= startingYear && m.date_published.Year <= endingYear)
                     tempMovies.Add(m);
@@ -156,7 +112,7 @@ namespace nothinbutdotnetprep.collections
         {
             IList<Movie> tempMovies = new List<Movie>();
 
-            foreach (Movie m in movies)
+            foreach (var m in movies)
             {
                 if (m.genre == Genre.kids)
                     tempMovies.Add(m);
@@ -165,33 +121,25 @@ namespace nothinbutdotnetprep.collections
             return tempMovies;
         }
 
-        public IEnumerable<Movie> all_action_movies()
+        public IEnumerable<Movie> sort_all_movies_by_movie_studio_and_year_published()
         {
-            IList<Movie> tempMovies = new List<Movie>();
-
-            foreach (Movie m in movies)
-            {
-                if (m.genre == Genre.action)
-                    tempMovies.Add(m);
-            }
-
-            return tempMovies;
+            throw new NotImplementedException();
         }
 
         public IEnumerable<Movie> sort_all_movies_by_date_published_descending()
         {
-            IList<Movie> tempMovies = movies;
+            var tempMovies = movies;
 
-            for (int i = 0; i < tempMovies.Count - 1; i++)
+            for (var i = 0; i < tempMovies.Count - 1; i++)
             {
-                for (int j = i + 1; j < tempMovies.Count; j++)
+                for (var j = i + 1; j < tempMovies.Count; j++)
                 {
-                    Movie moviei = tempMovies[i];
-                    Movie moviej = tempMovies[j];
+                    var moviei = tempMovies[i];
+                    var moviej = tempMovies[j];
 
                     if (moviej.date_published > moviei.date_published)
                     {
-                        Movie temp = tempMovies[i];
+                        var temp = tempMovies[i];
                         tempMovies[i] = tempMovies[j];
                         tempMovies[j] = temp;
                     }
@@ -203,18 +151,18 @@ namespace nothinbutdotnetprep.collections
 
         public IEnumerable<Movie> sort_all_movies_by_date_published_ascending()
         {
-            IList<Movie> tempMovies = movies;
+            var tempMovies = movies;
 
-            for (int i = 0; i < tempMovies.Count - 1; i++)
+            for (var i = 0; i < tempMovies.Count - 1; i++)
             {
-                for (int j = i + 1; j < tempMovies.Count; j++)
+                for (var j = i + 1; j < tempMovies.Count; j++)
                 {
-                    Movie moviei = tempMovies[i];
-                    Movie moviej = tempMovies[j];
+                    var moviei = tempMovies[i];
+                    var moviej = tempMovies[j];
 
                     if (moviej.date_published < moviei.date_published)
                     {
-                        Movie temp = tempMovies[i];
+                        var temp = tempMovies[i];
                         tempMovies[i] = tempMovies[j];
                         tempMovies[j] = temp;
                     }
@@ -222,6 +170,58 @@ namespace nothinbutdotnetprep.collections
             }
 
             return tempMovies;
+        }
+
+        public IEnumerable<Movie> sort_all_movies_by_title_ascending
+        {
+            get
+            {
+                var tempMovies = movies;
+
+                for (var i = 0; i < tempMovies.Count - 1; i++)
+                {
+                    for (var j = i + 1; j < tempMovies.Count; j++)
+                    {
+                        var moviei = tempMovies[i];
+                        var moviej = tempMovies[j];
+
+                        if (moviej.title.CompareTo(moviei.title) < 0)
+                        {
+                            var temp = tempMovies[i];
+                            tempMovies[i] = tempMovies[j];
+                            tempMovies[j] = temp;
+                        }
+                    }
+                }
+
+                return tempMovies;
+            }
+        }
+
+        public IEnumerable<Movie> sort_all_movies_by_title_descending
+        {
+            get
+            {
+                var tempMovies = movies;
+
+                for (var i = 0; i < tempMovies.Count - 1; i++)
+                {
+                    for (var j = i + 1; j < tempMovies.Count; j++)
+                    {
+                        var moviei = tempMovies[i];
+                        var moviej = tempMovies[j];
+
+                        if (moviej.title.CompareTo(moviei.title) > 0)
+                        {
+                            var temp = tempMovies[i];
+                            tempMovies[i] = tempMovies[j];
+                            tempMovies[j] = temp;
+                        }
+                    }
+                }
+
+                return tempMovies;
+            }
         }
     }
 }

@@ -1,0 +1,3 @@
+#Rules for equality comparisons
+
+
