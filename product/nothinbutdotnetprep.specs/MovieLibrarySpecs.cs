@@ -62,6 +62,19 @@ namespace nothinbutdotnetprep.specs
             };
         } ;
 
+        public class when_iterating : movie_library_concern
+        {
+            static IEnumerable<Movie> results;
+
+            Establish c = () =>
+                Enumerable.Range(1, 100).each(x => movie_collection.Add(new Movie()));
+
+            Because b = () =>
+                results = sut.all_movies();
+
+            It should_visit_each_item = () => { };
+        }
+
         [Subject(typeof(MovieLibrary))]
         public class when_counting_the_number_of_movies : movie_library_concern
         {
@@ -97,7 +110,7 @@ namespace nothinbutdotnetprep.specs
 
             Because b = () => { all_movies = sut.all_movies(); };
 
-            It should_receive_a_set_containing_each_movie_in_the_library = () => 
+            It should_receive_a_set_containing_each_movie_in_the_library = () =>
                 all_movies.ShouldContainOnly(first_movie, second_movie);
         }
 
@@ -181,9 +194,9 @@ namespace nothinbutdotnetprep.specs
         public class when_searching_for_movies : concern_for_searching_and_sorting
         {
             /* Look at the potential method explosion that can start to occur as you start to search on different criteria
-             * see if you can apply OCP (Open closed principle) to ensure that you can accomodate all means of searching for
-             * movies using different criteria. Feel free to change/remove explicit methods if you find a way to encompass searching
-             * without the need for using explicit methods. For this exercise, no linq queries are allowed!!.*/
+                 * see if you can apply OCP (Open closed principle) to ensure that you can accomodate all means of searching for
+                 * movies using different criteria. Feel free to change/remove explicit methods if you find a way to encompass searching
+                 * without the need for using explicit methods. For this exercise, no linq queries are allowed!!.*/
 
             It should_be_able_to_find_all_movies_published_by_pixar = () =>
             {
@@ -239,9 +252,9 @@ namespace nothinbutdotnetprep.specs
         public class when_sorting_movies : concern_for_searching_and_sorting
         {
             /* Look at the potential method explosion that can start to occur as you start to sort on different criteria
-             * see if you can apply OCP (Open closed principle) to ensure that you can accomodate all means of sorting for
-             * movies using different criteria. Feel free to change/remove explicit methods if you find a way to encompass sorting
-             * without the need for using explicit methods. For this exercise, no linq queries are allowed!!. */
+                 * see if you can apply OCP (Open closed principle) to ensure that you can accomodate all means of sorting for
+                 * movies using different criteria. Feel free to change/remove explicit methods if you find a way to encompass sorting
+                 * without the need for using explicit methods. For this exercise, no linq queries are allowed!!. */
 
             It should_be_able_to_sort_all_movies_by_title_descending = () =>
             {
@@ -289,10 +302,10 @@ namespace nothinbutdotnetprep.specs
                 //Disney
                 var results = sut.sort_all_movies_by_movie_studio_and_year_published();
                 /* should return a set of results 
-                 * in the collection sorted by the rating of the production studio (not the movie rating) and year published. for this exercise you need to take the studio ratings
-                 * into effect, which means that you first have to sort by movie studio (taking the ranking into account) and then by the
-                 * year published. For this test you cannot add any extra properties/fields to either the ProductionStudio or
-                 * Movie classes.*/
+                     * in the collection sorted by the rating of the production studio (not the movie rating) and year published. for this exercise you need to take the studio ratings
+                     * into effect, which means that you first have to sort by movie studio (taking the ranking into account) and then by the
+                     * year published. For this test you cannot add any extra properties/fields to either the ProductionStudio or
+                     * Movie classes.*/
 
                 results.ShouldContainOnlyInOrder(the_ring, theres_something_about_mary, a_bugs_life, cars, shrek,
                                                  indiana_jones_and_the_temple_of_doom,
